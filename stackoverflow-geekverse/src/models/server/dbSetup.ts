@@ -8,24 +8,29 @@ import {databases} from "./config";
 export default async function getOrCreateDB(){
     try{
         await databases.get(db)
-        console.log("Databsae connection")
+        console.log("Database connection successful")
     } catch (error){
         try{
             await databases.create(db, db)
-            console.log("database ceated")
-
-            //create Collections
-            await Promise.all([
-                createQuestionCollection(),
-                createAnswerCollection(),
-                createCommentCollection(),
-                createVoteCollection(),
-            ])
-            console.log("Collection created successfully!")
-            console.log("Database Connected successfully!")
+            console.log("Database created successfully")
         } catch (error){
-            console.error("Error creating database or collections", error)
+            console.error("Error creating database", error)
         }
     }
+
+    // Always attempt to verify and create collections
+    try {
+        await Promise.all([
+            createQuestionCollection(),
+            createAnswerCollection(),
+            createCommentCollection(),
+            createVoteCollection(),
+        ])
+        console.log("Collections verified/created successfully!")
+        console.log("Database Connected successfully!")
+    } catch (error) {
+        console.error("Error verifying or creating collections", error)
+    }
+
     return databases
 }
